@@ -24,10 +24,47 @@
         // 声明一个变量（正在画） 初始值是false
         ctx.fillStyle = 'black';
         //填充样式是这个颜色
-        ctx.strokeStyle = 'none'
+        ctx.strokeStyle = 'none';
+        //描边样式为无
+        ctx.lineWidth = 8;
+        //线的宽度是8
+        ctx.lineCap = "round";
+        //线的覆盖处是圆
 
-        canvas.onmousedown = () => {
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+        //我收取4个参数，你传4个参数给我，然后我调用这4个参数
+
+        let last  //声明变量last，上一次
+
+        var isTouchDevice = 'ontouchstart' in document.documentElement;
+        //检测手机是否支持触屏，检验ontouchstart是否在document上
+        //如果document上有这个事件，就是支持触屏的
+
+        if (isTouchDevice) {
+            canvas.ontouchstart = (e) => {
+                let x = e.touches[0].clientX
+                let y = e.touches[0].clientY
+                last = [x, y]
+            }
+            canvas.ontouchmove = (e) => {
+                let x = e.touches[0].clientX
+                let y = e.touches[0].clientY
+                drawLine(last[0], last[1], x, y)
+                last = [x, y]
+            }
+        } else {
+
+        }
+        // 在手机上运行画线代码，拿到的坐标不一样，其它都一样
+
+        canvas.onmousedown = (e) => {
             painting = true
+            last = [e.clientX, e.clientY]
         }
         //当鼠标按下的时候，painting的值是true
 
@@ -35,13 +72,18 @@
             if (painting === true) {
                 //ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10);
                 //填充矩形，起始横坐标，纵坐标，宽度，高度
-                ctx.beginPath();
-                ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
-                ctx.stroke();
-                ctx.fill();
+
+                //ctx.beginPath();
+                //ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
+                //ctx.stroke();
+                //ctx.fill();
                 //填充圆形
+
+                drawLine(last[0], last[1], e.clientX, e.clientY)
+                last = [e.clientX, e.clientY]
+                //last等于新的x，y
             } else {
-                console.log('什么都不做')
+
             }
         }
         canvas.onmouseup = () => {
